@@ -28,7 +28,7 @@ import { StatusBadge } from '@/components/status-badge';
 import { TeamCrest } from '@/components/team-crest';
 import { useClipboard } from '@/hooks/use-clipboard';
 import LandingLayout from '@/layouts/landing-layout';
-import { formatDate, formatGameTime, plural } from '@/lib/format';
+import { currentSet, formatDate, formatGameTime, plural } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import type {
     Game,
@@ -513,7 +513,10 @@ function useNow(interval: number) {
 function Score({ game }: { game: Game }) {
     const live = game.status === 'live';
     const sets = game.sets ?? [];
-    const current = sets[sets.length - 1];
+    // Volleyball: while playing, the points of the set in progress lead and the sets go below.
+    const set = currentSet(game);
+    const home = set ? set.home : game.home_score;
+    const away = set ? set.away : game.away_score;
 
     return (
         <div
@@ -529,20 +532,28 @@ function Score({ game }: { game: Game }) {
                 </span>
             ) : (
                 <span className="text-[10px] font-semibold tracking-widest text-white/60 uppercase sm:text-xs">
-                    Final
+                    {sets.length > 0 ? 'Final · sets' : 'Final'}
                 </span>
             )}
+            {set && (
+                <p className="mt-1.5 text-[10px] font-semibold tracking-widest text-white/60 uppercase sm:text-xs">
+                    Set {set.number}
+                </p>
+            )}
             <p
-                key={`${game.home_score}-${game.away_score}`}
+                key={`${home}-${away}`}
                 className="mt-1 animate-in font-display text-5xl leading-none tabular-nums duration-500 zoom-in-125 sm:text-7xl"
             >
-                {game.home_score}
+                {home}
                 <span className="mx-1.5 text-white/35">-</span>
-                {game.away_score}
+                {away}
             </p>
-            {live && current && (
-                <p className="mt-1 text-[11px] text-white/60 tabular-nums">
-                    Set {sets.length}: {current.home}-{current.away}
+            {set && (
+                <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] text-white/70 tabular-nums">
+                    Sets
+                    <span className="font-semibold text-white">
+                        {game.home_score} - {game.away_score}
+                    </span>
                 </p>
             )}
             {!live && sets.length > 0 && (
@@ -1039,6 +1050,7 @@ function MatchRow({
     const played = game.status !== 'scheduled';
     const pickable = game.home_team !== null && game.away_team !== null;
     const sets = game.sets ?? [];
+    const set = currentSet(game);
     const lost = (team: GameTeam | null) =>
         game.status === 'finished' &&
         team !== null &&
@@ -1103,9 +1115,9 @@ function MatchRow({
                 <span className="px-1 text-center font-display leading-none tabular-nums">
                     {played ? (
                         <span className="text-3xl">
-                            {game.home_score}
+                            {set ? set.home : game.home_score}
                             <span className="mx-1 text-white/35">-</span>
-                            {game.away_score}
+                            {set ? set.away : game.away_score}
                         </span>
                     ) : (
                         <span className="text-2xl text-white/40">VS</span>
@@ -1127,8 +1139,8 @@ function MatchRow({
                 <span className="mt-2 block text-center text-[11px] text-white/50 tabular-nums">
                     {game.home_penalties !== null
                         ? `Penales ${game.home_penalties}-${game.away_penalties}`
-                        : live
-                          ? `Set ${sets.length}: ${sets[sets.length - 1].home}-${sets[sets.length - 1].away}`
+                        : set
+                          ? `Set ${set.number} · Sets ${game.home_score}-${game.away_score}`
                           : sets
                                 .map((set) => `${set.home}-${set.away}`)
                                 .join(' · ')}

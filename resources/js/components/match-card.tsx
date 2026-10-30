@@ -3,7 +3,7 @@ import { CalendarDays, CirclePlay, MapPin } from 'lucide-react';
 import PublicTournamentController from '@/actions/App/Http/Controllers/Public/TournamentController';
 import { SportIcon } from '@/components/sport-icon';
 import { TeamCrest } from '@/components/team-crest';
-import { formatGameTime } from '@/lib/format';
+import { currentSet, formatGameTime } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import type { GameStatus, GameTeam, SportValue } from '@/types/tournament';
 
@@ -14,6 +14,7 @@ export type MatchCardData = {
     venue: string | null;
     home_score: number;
     away_score: number;
+    sets: { home: number; away: number }[] | null;
     home_penalties: number | null;
     away_penalties: number | null;
     winner_team_id: number | null;
@@ -34,6 +35,8 @@ export function MatchCard({ game }: { game: MatchCardData }) {
     const played = game.status !== 'scheduled';
     const live = game.status === 'live';
     const tab = game.status === 'finished' ? 'resultados' : 'partidos';
+    // Volleyball: while playing, the points of the set in progress.
+    const set = currentSet(game);
 
     return (
         <Link
@@ -65,9 +68,9 @@ export function MatchCard({ game }: { game: MatchCardData }) {
                 <span className="w-20 text-center font-display text-4xl tracking-wide">
                     {played ? (
                         <>
-                            {game.home_score}
+                            {set ? set.home : game.home_score}
                             <span className="mx-1 text-white/40">-</span>
-                            {game.away_score}
+                            {set ? set.away : game.away_score}
                         </>
                     ) : (
                         'VS'
@@ -107,6 +110,11 @@ export function MatchCard({ game }: { game: MatchCardData }) {
                 {game.home_penalties !== null && (
                     <p className="text-xs text-white/50">
                         Penales {game.home_penalties}-{game.away_penalties}
+                    </p>
+                )}
+                {set && (
+                    <p className="text-xs text-white/50 tabular-nums">
+                        {`Set ${set.number} · Sets ${game.home_score}-${game.away_score}`}
                     </p>
                 )}
             </div>

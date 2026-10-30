@@ -53,3 +53,17 @@ export function formatGameTime(value: string) {
 
     return `${day} · ${time}`;
 }
+
+/**
+ * Volleyball while it is being played: the set in progress (always the last one) and its points.
+ */
+export function currentSet(game: {
+    status: string;
+    sets?: { home: number; away: number }[] | null;
+}): { number: number; home: number; away: number } | null {
+    const sets = game.sets ?? [];
+
+    return game.status === 'live' && sets.length > 0
+        ? { number: sets.length, ...sets[sets.length - 1] }
+        : null;
+}

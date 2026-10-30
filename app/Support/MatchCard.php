@@ -15,7 +15,7 @@ class MatchCard
     public static function from(Game $game): array
     {
         return [
-            ...$game->only(['id', 'status', 'venue', 'home_score', 'away_score', 'home_penalties', 'away_penalties', 'winner_team_id']),
+            ...$game->only(['id', 'status', 'venue', 'home_score', 'away_score', 'sets', 'home_penalties', 'away_penalties', 'winner_team_id']),
             'scheduled_at' => $game->scheduled_at?->format('Y-m-d\TH:i'),
             'home_team' => $game->homeTeam?->only(['id', 'name', 'color', 'logo_url']),
             'away_team' => $game->awayTeam?->only(['id', 'name', 'color', 'logo_url']),
