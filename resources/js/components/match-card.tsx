@@ -28,7 +28,7 @@ export type MatchCardData = {
 };
 
 /**
- * "Team VS Team" card of a public game; links to its tournament page.
+ * "Team VS Team" card of a public game; links to its tournament page with the game in the header.
  */
 export function MatchCard({ game }: { game: MatchCardData }) {
     const played = game.status !== 'scheduled';
@@ -38,7 +38,7 @@ export function MatchCard({ game }: { game: MatchCardData }) {
     return (
         <Link
             href={PublicTournamentController.show(game.tournament, {
-                query: { tab },
+                query: { tab, partido: game.id },
             })}
             className={cn(
                 'group overflow-hidden rounded-3xl border bg-[#0b1220] transition-colors',

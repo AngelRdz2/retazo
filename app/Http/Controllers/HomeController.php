@@ -8,6 +8,7 @@ use App\Enums\TournamentStatus;
 use App\Models\Game;
 use App\Models\Team;
 use App\Models\Tournament;
+use App\Support\CoverImage;
 use App\Support\MatchCard;
 use App\Support\TournamentMeta;
 use Inertia\Inertia;
@@ -42,25 +43,10 @@ class HomeController extends Controller
                 ->limit(10)
                 ->get(['id', 'name', 'color', 'logo_path']),
             'images' => [
-                'stadium' => $this->optionalImage('estadio'),
-                'player' => $this->optionalImage('jugador'),
-                'trophy' => $this->optionalImage('copa'),
+                'stadium' => CoverImage::find('estadio'),
+                'player' => CoverImage::find('jugador'),
+                'trophy' => CoverImage::find('copa'),
             ],
         ])->withViewData(['meta' => TournamentMeta::site()]);
-    }
-
-    /**
-     * Photos for the home page are optional: drop them in public/images/portada
-     * (e.g. estadio.jpg) and they replace the drawn background.
-     */
-    private function optionalImage(string $name): ?string
-    {
-        foreach (['webp', 'jpg', 'jpeg', 'png'] as $extension) {
-            if (is_file(public_path("images/portada/{$name}.{$extension}"))) {
-                return asset("images/portada/{$name}.{$extension}");
-            }
-        }
-
-        return null;
     }
 }

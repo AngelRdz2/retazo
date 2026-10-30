@@ -38,7 +38,7 @@ export function Bracket({ bracket }: { bracket: BracketData }) {
 
                     return (
                         <div key={round.round} className="w-52 shrink-0">
-                            <h4 className="mb-3 text-center text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                            <h4 className="mb-3 text-center text-xs font-semibold tracking-wide text-white/50 uppercase">
                                 {round.label}
                             </h4>
                             <div className="flex flex-col" style={{ height }}>
@@ -53,14 +53,14 @@ export function Bracket({ bracket }: { bracket: BracketData }) {
                                                 className="relative flex flex-1 items-center"
                                             >
                                                 {index > 0 && (
-                                                    <span className="absolute top-1/2 right-full w-4 border-t-2" />
+                                                    <span className="absolute top-1/2 right-full w-4 border-t-2 border-white/15" />
                                                 )}
                                                 {!isLast && (
                                                     <>
-                                                        <span className="absolute top-1/2 left-full w-4 border-t-2" />
+                                                        <span className="absolute top-1/2 left-full w-4 border-t-2 border-white/15" />
                                                         <span
                                                             className={cn(
-                                                                'absolute left-[calc(100%+1rem)] h-1/2 border-l-2',
+                                                                'absolute left-[calc(100%+1rem)] h-1/2 border-l-2 border-white/15',
                                                                 position % 2 ===
                                                                     0
                                                                     ? 'top-1/2'
@@ -136,21 +136,19 @@ function BracketGame({ game }: { game: Game }) {
     return (
         <div
             className={cn(
-                'w-full overflow-hidden rounded-xl border bg-card shadow-sm',
+                'w-full overflow-hidden rounded-xl border border-white/10 bg-[#0b1220]',
                 game.status === 'live' &&
                     'border-red-500/60 ring-2 ring-red-500/30',
             )}
         >
-            <div className="flex items-center justify-between bg-muted/50 px-2.5 py-1 text-[10px] text-muted-foreground">
+            <div className="flex items-center justify-between bg-white/[0.04] px-2.5 py-1 text-[10px] text-white/50">
                 <span className="truncate">
                     {game.scheduled_at
                         ? formatGameTime(game.scheduled_at)
                         : 'Por programar'}
                 </span>
                 {game.status === 'live' && (
-                    <span className="font-bold text-red-600 dark:text-red-400">
-                        EN VIVO
-                    </span>
+                    <span className="font-bold text-red-400">EN VIVO</span>
                 )}
             </div>
             {(['home', 'away'] as const).map((side) => {
@@ -167,8 +165,8 @@ function BracketGame({ game }: { game: Game }) {
                         key={side}
                         className={cn(
                             'flex items-center gap-2 px-2.5 py-1.5 text-sm',
-                            winner && 'bg-brand/10 font-bold',
-                            loser && 'text-muted-foreground',
+                            winner && 'bg-white/[0.06] font-bold',
+                            loser && 'text-white/45',
                         )}
                     >
                         {team ? (
@@ -177,12 +175,12 @@ function BracketGame({ game }: { game: Game }) {
                                 className="size-5 text-[9px]"
                             />
                         ) : (
-                            <span className="size-5 rounded-full border border-dashed" />
+                            <span className="size-5 rounded-full border border-dashed border-white/25" />
                         )}
                         <span
                             className={cn(
                                 'flex-1 truncate',
-                                !team && 'text-muted-foreground italic',
+                                !team && 'text-white/40 italic',
                             )}
                         >
                             {team?.name ?? 'Por definir'}
@@ -193,7 +191,7 @@ function BracketGame({ game }: { game: Game }) {
                                     ? game.home_score
                                     : game.away_score}
                                 {penalties !== null && (
-                                    <sup className="ml-0.5 text-[10px] text-muted-foreground">
+                                    <sup className="ml-0.5 text-[10px] text-white/50">
                                         ({penalties})
                                     </sup>
                                 )}
@@ -208,7 +206,7 @@ function BracketGame({ game }: { game: Game }) {
 
 function ByeSlot({ team }: { team: GameTeam | null }) {
     return (
-        <div className="w-full rounded-xl border border-dashed px-2.5 py-2 text-sm text-muted-foreground">
+        <div className="w-full rounded-xl border border-dashed border-white/20 px-2.5 py-2 text-sm text-white/55">
             <div className="flex items-center gap-2">
                 {team && (
                     <TeamAvatar team={team} className="size-5 text-[9px]" />

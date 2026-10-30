@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Game;
 use App\Models\Tournament;
 use App\Services\StandingsCalculator;
+use App\Support\CoverImage;
 use App\Support\GameData;
 use App\Support\RoundLabel;
 use App\Support\TournamentMeta;
@@ -63,6 +64,8 @@ class TournamentController extends Controller
         return Inertia::render('public/tournament', [
             'tournament' => $tournament,
             'tab' => $request->query('tab'),
+            // Match shown in the header, e.g. when coming from a match card.
+            'featuredGameId' => $request->integer('partido') ?: null,
             'teams' => $teams->map->only(['id', 'name', 'color', 'logo_url', 'group_id'])->values(),
             'groups' => $tournament->groups()->get(['id', 'name']),
             'rules' => $tournament->rules()->where('is_active', true)->get(),
@@ -74,6 +77,7 @@ class TournamentController extends Controller
                 ? (int) ($tournament->settings['qualifiers_per_group'] ?? 2)
                 : null,
             'bracket' => $this->bracket($games, $knockoutRounds),
+            'stadium' => CoverImage::find('estadio'),
         ])->withViewData(['meta' => TournamentMeta::for($tournament, $teams->count())]);
     }
 

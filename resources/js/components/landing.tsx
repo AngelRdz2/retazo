@@ -57,7 +57,7 @@ export function LandingNav({ className }: { className?: string }) {
                 {auth.user ? (
                     <Link
                         href={dashboard()}
-                        className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-white/90 sm:px-5"
+                        className="rounded-full bg-white px-4 py-2 text-sm font-semibold whitespace-nowrap text-slate-900 hover:bg-white/90 sm:px-5"
                     >
                         Mi panel
                     </Link>
@@ -65,13 +65,13 @@ export function LandingNav({ className }: { className?: string }) {
                     <>
                         <Link
                             href={login()}
-                            className="rounded-full px-3 py-2 text-sm font-medium text-white/85 hover:text-white"
+                            className="rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap text-white/85 hover:text-white"
                         >
                             Entrar
                         </Link>
                         <Link
                             href={register()}
-                            className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-white/90 sm:px-5"
+                            className="rounded-full bg-white px-4 py-2 text-sm font-semibold whitespace-nowrap text-slate-900 hover:bg-white/90 sm:px-5"
                         >
                             Crear cuenta
                         </Link>

@@ -9,14 +9,14 @@ export function useClipboard(): UseClipboardReturn {
     const [copiedText, setCopiedText] = useState<CopiedValue>(null);
 
     const copy: CopyFn = async (text) => {
-        if (!navigator?.clipboard) {
-            console.warn('Clipboard not supported');
-
-            return false;
-        }
-
         try {
-            await navigator.clipboard.writeText(text);
+            // The Clipboard API only exists on HTTPS (or localhost); plain http sites like *.test need the fallback.
+            if (navigator?.clipboard) {
+                await navigator.clipboard.writeText(text);
+            } else if (!copyWithSelection(text)) {
+                throw new Error('Clipboard not supported');
+            }
+
             setCopiedText(text);
 
             return true;
@@ -29,4 +29,23 @@ export function useClipboard(): UseClipboardReturn {
     };
 
     return [copiedText, copy];
+}
+
+/**
+ * Copies through a hidden textarea and the legacy copy command.
+ */
+function copyWithSelection(text: string): boolean {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+
+    try {
+        return document.execCommand('copy');
+    } finally {
+        textarea.remove();
+    }
 }
