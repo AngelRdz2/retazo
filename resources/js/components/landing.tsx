@@ -1,10 +1,17 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Download } from 'lucide-react';
+import { Download, Menu } from 'lucide-react';
 import type { ReactNode } from 'react';
 import MatchController from '@/actions/App/Http/Controllers/Public/MatchController';
 import PageController from '@/actions/App/Http/Controllers/Public/PageController';
 import PublicTournamentController from '@/actions/App/Http/Controllers/Public/TournamentController';
 import TournamentController from '@/actions/App/Http/Controllers/TournamentController';
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
 import { useInstallPrompt } from '@/hooks/use-install-prompt';
 import { cn } from '@/lib/utils';
 import { dashboard, login, register } from '@/routes';
@@ -63,9 +70,10 @@ export function LandingNav({ className }: { className?: string }) {
                     </Link>
                 ) : (
                     <>
+                        {/* On phones "Entrar" lives in the menu to leave room for the logo. */}
                         <Link
                             href={login()}
-                            className="rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap text-white/85 hover:text-white"
+                            className="hidden rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap text-white/85 hover:text-white sm:inline-flex"
                         >
                             Entrar
                         </Link>
@@ -77,8 +85,98 @@ export function LandingNav({ className }: { className?: string }) {
                         </Link>
                     </>
                 )}
+                <MobileMenu />
             </div>
         </header>
+    );
+}
+
+const menuLinks = () => [
+    { label: 'Inicio', href: '/' },
+    { label: 'Torneos', href: PublicTournamentController.index.url() },
+    { label: 'Partidos', href: MatchController.index.url() },
+    { label: 'Cómo funciona', href: PageController.howItWorks.url() },
+];
+
+/**
+ * The pill menu doesn't fit on phones: a button opens the same links in a side panel.
+ */
+function MobileMenu() {
+    const { auth } = usePage().props;
+    const path = usePage().url.split(/[?#]/)[0];
+
+    return (
+        <Sheet>
+            <SheetTrigger asChild>
+                <button
+                    type="button"
+                    className="flex size-9 items-center justify-center rounded-full border border-white/15 text-white hover:bg-white/10 md:hidden"
+                    aria-label="Abrir menú"
+                >
+                    <Menu className="size-5" />
+                </button>
+            </SheetTrigger>
+            {/* Portaled outside the dark page, so it sets its own dark theme. */}
+            <SheetContent
+                side="right"
+                className="dark w-72 border-white/10 bg-[#070b14] text-white"
+            >
+                <SheetTitle className="sr-only">Menú</SheetTitle>
+                <img
+                    src="/images/logo.png"
+                    alt="Retazo"
+                    className="mt-4 ml-4 h-7 w-auto self-start"
+                />
+                <nav className="flex flex-col gap-1 px-3">
+                    {menuLinks().map((link) => (
+                        <SheetClose asChild key={link.href}>
+                            <Link
+                                href={link.href}
+                                className={cn(
+                                    'rounded-xl px-3 py-2.5 text-base font-medium transition-colors hover:bg-white/10',
+                                    path === link.href
+                                        ? 'bg-white/10 text-white'
+                                        : 'text-white/75',
+                                )}
+                            >
+                                {link.label}
+                            </Link>
+                        </SheetClose>
+                    ))}
+                </nav>
+                <div className="mt-auto flex flex-col gap-2 p-4">
+                    {auth.user ? (
+                        <SheetClose asChild>
+                            <Link
+                                href={dashboard()}
+                                className="rounded-full bg-white px-4 py-2.5 text-center text-sm font-semibold text-slate-900"
+                            >
+                                Mi panel
+                            </Link>
+                        </SheetClose>
+                    ) : (
+                        <>
+                            <SheetClose asChild>
+                                <Link
+                                    href={register()}
+                                    className="rounded-full bg-white px-4 py-2.5 text-center text-sm font-semibold text-slate-900"
+                                >
+                                    Crear cuenta
+                                </Link>
+                            </SheetClose>
+                            <SheetClose asChild>
+                                <Link
+                                    href={login()}
+                                    className="rounded-full border border-white/20 px-4 py-2.5 text-center text-sm font-semibold"
+                                >
+                                    Iniciar sesión
+                                </Link>
+                            </SheetClose>
+                        </>
+                    )}
+                </div>
+            </SheetContent>
+        </Sheet>
     );
 }
 

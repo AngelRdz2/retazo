@@ -14,6 +14,7 @@ use App\Services\Scheduling\GroupStage;
 use App\Services\Scheduling\ScheduleGenerator;
 use App\Services\Scheduling\ScheduleOptions;
 use Carbon\CarbonImmutable;
+use Database\Seeders\RuleTemplateSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -181,5 +182,59 @@ class PublicPagesTest extends TestCase
 
         $this->get(route('public.tournaments.show', $draft))->assertNotFound();
         $this->get('/t/no-existe')->assertNotFound();
+    }
+
+    public function test_the_matches_page_lists_live_games_first_then_results_by_sport(): void
+    {
+        $tournament = Tournament::factory()->sport(Sport::Football)->status(TournamentStatus::InProgress)->create();
+        Team::factory()->for($tournament)->count(4)->create();
+        $this->schedule($tournament);
+        [$first, $second] = $tournament->games()->orderBy('scheduled_at')->take(2)->get();
+        $first->update(['status' => GameStatus::Finished, 'home_score' => 1, 'away_score' => 0, 'finished_at' => now()]);
+        $second->update(['status' => GameStatus::Live]);
+
+        // Games of a draft tournament are never public.
+        $draft = Tournament::factory()->sport(Sport::Football)->create();
+        Team::factory()->for($draft)->count(2)->create();
+        $this->schedule($draft);
+        $draft->update(['status' => TournamentStatus::Draft]);
+
+        $this->get(route('public.games.index'))->assertInertia(fn ($page) => $page
+            ->component('public/matches')
+            ->where('filters.vista', 'proximos')
+            ->has('games.data', 5)
+            ->where('games.data.0.id', $second->id)
+            ->where('games.data.0.status', 'live')
+            ->where('live', 1));
+
+        $this->get(route('public.games.index', ['vista' => 'resultados']))->assertInertia(fn ($page) => $page
+            ->where('filters.vista', 'resultados')
+            ->has('games.data', 1)
+            ->where('games.data.0.id', $first->id)
+            ->where('games.data.0.home_score', 1));
+
+        $this->get(route('public.games.index', ['deporte' => 'basketball']))->assertInertia(fn ($page) => $page
+            ->where('filters.deporte', 'basketball')
+            ->has('games.data', 0)
+            ->where('live', 0));
+    }
+
+    public function test_the_how_it_works_page_describes_every_sport_with_its_rules(): void
+    {
+        $this->seed(RuleTemplateSeeder::class);
+
+        $this->get(route('public.how-it-works'))
+            ->assertOk()
+            ->assertSee('<title>Cómo funciona · Retazo</title>', false)
+            ->assertInertia(fn ($page) => $page
+                ->component('public/how-it-works')
+                ->has('sports', 3)
+                ->where('sports.0.value', 'football')
+                ->where('sports.0.penaltiesInKnockout', true)
+                ->where('sports.1.usesSets', true)
+                ->where('sports.2.scoreIncrements', [1, 2, 3])
+                // "{value}" placeholders are shown as "…", and variant rules appear once.
+                ->where('sports.0.rules', fn ($rules) => collect($rules)->contains('Dos tiempos de … minutos')
+                    && collect($rules)->filter(fn ($rule) => str_starts_with($rule, 'Dos tiempos'))->count() === 1));
     }
 }

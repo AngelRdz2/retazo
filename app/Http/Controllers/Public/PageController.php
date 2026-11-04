@@ -19,7 +19,8 @@ class PageController extends Controller
         return Inertia::render('public/how-it-works', [
             'sports' => array_map(fn (Sport $sport) => [
                 ...$sport->definition()->toArray(),
-                'rules' => RuleTemplate::query()->forSport($sport)->pluck('text')
+                // Every variant's rules; the ones repeated across variants appear once.
+                'rules' => RuleTemplate::query()->where('sport', $sport)->orderBy('sort_order')->pluck('text')
                     ->map(fn (string $text) => str_replace('{value}', '…', $text))
                     ->unique()
                     ->values(),
