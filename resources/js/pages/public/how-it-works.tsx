@@ -127,8 +127,8 @@ const roles = [
 
 const faqs = [
     {
-        q: '¿Se manejan pagos o inscripciones con dinero?',
-        a: 'No. Retazo no cobra inscripciones ni maneja dinero: si hay una cuota, los equipos la arreglan directamente con el organizador.',
+        q: '¿Retazo maneja apuestas, pagos o premios?',
+        a: 'No. Retazo no es una casa de apuestas ni una liga profesional: no acepta apuestas, no cobra inscripciones, no paga premios ni maneja dinero. Es solo una herramienta para organizar torneos amateur. Si un torneo tiene una cuota o un premio, es un acuerdo entre los equipos y su organizador.',
     },
     {
         q: '¿Los equipos necesitan crear una cuenta?',

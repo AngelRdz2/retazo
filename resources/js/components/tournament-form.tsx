@@ -2,6 +2,7 @@ import { useForm } from '@inertiajs/react';
 import type { UrlMethodPair } from '@inertiajs/core';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import type { FormEvent, ReactNode } from 'react';
+import { MoneyNote } from '@/components/disclaimer';
 import InputError from '@/components/input-error';
 import { SportIcon } from '@/components/sport-icon';
 import { Button } from '@/components/ui/button';
@@ -407,6 +408,7 @@ export function TournamentForm({
                         placeholder="Sin límite"
                     />
                 </Field>
+                <MoneyNote />
             </Section>
 
             <Section title="Estado">

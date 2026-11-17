@@ -5,6 +5,7 @@ import MatchController from '@/actions/App/Http/Controllers/Public/MatchControll
 import PageController from '@/actions/App/Http/Controllers/Public/PageController';
 import PublicTournamentController from '@/actions/App/Http/Controllers/Public/TournamentController';
 import TournamentController from '@/actions/App/Http/Controllers/TournamentController';
+import { Disclaimer } from '@/components/disclaimer';
 import {
     Sheet,
     SheetClose,
@@ -276,6 +277,9 @@ export function LandingFooter() {
                         </ul>
                     </div>
                 ))}
+            </div>
+            <div className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
+                <Disclaimer className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-white/60" />
             </div>
             <p className="border-t border-white/10 py-5 text-center text-xs text-white/40">
                 © {new Date().getFullYear()} Retazo

@@ -3,6 +3,7 @@ import { CircleCheck } from 'lucide-react';
 import { useState } from 'react';
 import TeamRegistrationController from '@/actions/App/Http/Controllers/Public/TeamRegistrationController';
 import PublicTournamentController from '@/actions/App/Http/Controllers/Public/TournamentController';
+import { MoneyNote } from '@/components/disclaimer';
 import InputError from '@/components/input-error';
 import { TEAM_COLORS } from '@/components/team-form-dialog';
 import { Button } from '@/components/ui/button';
@@ -131,6 +132,8 @@ export default function RegisterTeam({
                                     </div>
                                     <InputError message={errors.color} />
                                 </div>
+
+                                <MoneyNote />
 
                                 <Button
                                     type="submit"

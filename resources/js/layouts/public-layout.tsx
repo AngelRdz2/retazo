@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { Download } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
+import { Disclaimer } from '@/components/disclaimer';
 import { Button } from '@/components/ui/button';
 import { useInstallPrompt } from '@/hooks/use-install-prompt';
 import { dashboard, home, login, register } from '@/routes';
@@ -75,6 +76,9 @@ export default function PublicLayout({ children }: PropsWithChildren) {
                     <p className="text-xs text-muted-foreground">
                         © {new Date().getFullYear()} Retazo
                     </p>
+                </div>
+                <div className="mx-auto max-w-6xl px-4 pb-8">
+                    <Disclaimer className="rounded-2xl border bg-muted/40 p-4 text-muted-foreground" />
                 </div>
             </footer>
         </div>
